@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="pin-generator half-width">
+                    <input id="pin-input" class="form-control" type="text">
+                    <button id="generate-button" class="generate-btn">Generate Pin</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="input-section half-width">
+                    <input name="display" class="form-control" type="text">
+                    <div class="numbers">
+                        <div class="calc-body">
+                            <div class="calc-button-row">
+                              <div class="button" onclick="addToDisplay(7)">7</div>
+                              <div class="button" onclick="addToDisplay(8)">8</div>
+                              <div class="button" onclick="addToDisplay(9)">9</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button" onclick="addToDisplay(4)">4</div>
+                              <div class="button" onclick="addToDisplay(5)">5</div>
+                              <div class="button" onclick="addToDisplay(6)">6</div>
+                            </div>
+                            <div class="calc-button-row">
+                              <div class="button" onclick="addToDisplay(1)">1</div>
+                              <div class="button" onclick="addToDisplay(2)">2</div>
+                              <div class="button" onclick="addToDisplay(3)">3</div>
+                            </div>
+                            <div class="calc-button-row">
+                                <div class="button" onclick="deleteLastCharacter()">&lt;</div>
+                                <div class="button" onclick="addToDisplay(0)">0</div>
+                                <div class="button" onclick="clearDisplay()">C</div>
+                            </div>
+                            <div>
+                                <button id="submit-button" type="submit" class="submit-btn">Submit</button>
+                                <p id="try-left" class="action-left">3 try left</p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notify-section">
+            <p id="unmatched" class="notify">❌ Pin Didn't Match, Please try again</p>
+            <p id="matched" class="notify">✅ Pin Matched... Secret door is opening for you</p>
+        </div>
+    </div>
+
+    <script>
+        // Generating random 4-digit pin number
+        const generateButton = document.getElementById("generate-button");
+        generateButton.addEventListener("click",function(){
+            const pinInput = document.getElementById("pin-input");
+            const generateNumber = Math.round(1000 + Math.random() * 9000);
+            pinInput.value = generateNumber;
+
+        })
+        
+        // Submitting the pin and checking true or false and displaying result
+        const submitButton = document.getElementById("submit-button");
+        const tryLeftElement = document.querySelector(".action-left");
+        let tryLeft = 3; // Variable to track the number of tries left
+        const notifySection = document.getElementById("notify-section");
+        const successMessage = document.getElementById("matched");
+        const failureMessage = document.getElementById("unmatched");
+
+        submitButton.addEventListener("click", function(){
+            const pinNumber = document.getElementById("pin-input").value;
+            const typingNumber = document.getElementsByName("display")[0].value;
+
+            if (pinNumber === typingNumber) {
+                successMessage.innerText = "✅ Pin Matched... Secret door is opening for you";
+                successMessage.removeAttribute("hidden");
+                failureMessage.setAttribute("hidden", "hidden");
+
+                tryLeft = 3; // Reset the number of tries to 3
+                tryLeftElement.innerText = `${tryLeft} try left`;
+                submitButton.removeAttribute("disabled");
+            } else {
+                failureMessage.innerText = "❌ Pin Didn't Match, Please try again";
+                failureMessage.removeAttribute("hidden");
+                successMessage.setAttribute("hidden", "hidden");
+
+                tryLeft--; // Reduce the number of tries by 1
+
+                if (tryLeft > 0) {
+                    tryLeftElement.innerText = `${tryLeft} try left`;
+                } else {
+                    tryLeftElement.innerText = "No tries left";
+                    submitButton.setAttribute("disabled", "disabled");
+                }
+            }
+
+            notifySection.style.display = "block"; // Show the notify section
+        });
+
+        // Defining the function for giving the input 
+        let dotUsed = false; // Variable to track if the dot has been used
+        let lastInputOperator = false; // Variable to track if the last input was an operator
+
+        function addToDisplay(value) {
+            const display = document.getElementsByName("display")[0];
+            display.value += value;
+            lastInputOperator = false;
+        }
+
+        function deleteLastCharacter(){
+            const display = document.getElementsByName("display")[0];
+            display.value = display.value.slice(0,-1);
+            lastInputOperator = false;
+        }
+
+        function clearDisplay(){
+            const display = document.getElementsByName("display")[0];
+            display.value = '';
+            lastInputOperator = false;
+            dotUsed = false;
+        }
+
+    </script>
+</body>
+</html>
